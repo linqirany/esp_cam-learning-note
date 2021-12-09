@@ -77,7 +77,7 @@
 static int s_retry_num = 0;
 
 #if defined(CONFIG_EXAMPLE_IPV4)
-#define HOST_IP_ADDR "192.168.10.200"
+#define HOST_IP_ADDR "192.168.10.20"
 #elif defined(CONFIG_EXAMPLE_IPV6)
 #define HOST_IP_ADDR CONFIG_EXAMPLE_IPV6_ADDR
 #else
@@ -156,7 +156,7 @@ static int first_takepic()
         if (camera_retry > 2)
         {
             ESP_LOGE(TAG, "stream_handler, reset camera.");
-            esp_restart();
+			esp_restart();
             camera_retry = 0;
             break;
         }
@@ -209,9 +209,9 @@ static int first_takepic()
             free(_jpg_buf);
             _jpg_buf = NULL;
         }
-
+		/*
         gettimeofday(&tv_no1, NULL);
-        ESP_LOGI(TAG, "esp_camera_fb_return time:%lld.%lld ", (int64_t)tv_no1.tv_sec, (int64_t)tv_no1.tv_usec);
+        ESP_LOGI(TAG, "esp_camera_fb_return time:%lld.%lld ", (int64_t)tv_no1.tv_sec, (int64_t)tv_no1.tv_usec);*/
         break;
     } while (1);
     return ret;
@@ -510,6 +510,7 @@ static int stream_handler()
             sendLockedSocket(mBuffer, len_of_send);
             len_of_send = 0;
             camera_retry = 0;
+			esp_restart();
             break;
         }
 
@@ -999,7 +1000,7 @@ static uint8_t TX_CheckSum(uint8_t *buf, uint8_t len)
 void app_client_main(void)
 {
     ESP_LOGE(TAG, "app_client_main start tast tcpclient............");
-
+	first_takepic();
     // init led
     gpio_pad_select_gpio(33);
     gpio_set_direction(33, GPIO_MODE_OUTPUT);
@@ -1007,7 +1008,6 @@ void app_client_main(void)
     redled_enable();
     esp_initialize_sntp();
     //createHeartBeatThread();
-    first_takepic();
 
     esp_timer_create(&esp_heart_arg, &esp_heart_handle);
     esp_timer_start_periodic(esp_heart_handle, 1000 * 1000);
